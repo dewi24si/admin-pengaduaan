@@ -18,10 +18,19 @@ class KategoriPengaduan extends Model
         'prioritas',
     ];
 
- public function tindakLanjut()
+    public function pengaduan()
     {
-        return $this->hasMany(TindakLanjut::class, 'kategori_id', 'kategori_id');
+        return $this->hasMany(Pengaduan::class, 'kategori_id', 'kategori_id');
+    }
+
+    public function getPrioritasTextAttribute()
+    {
+        $prioritas = [
+            'rendah' => 'Rendah',
+            'sedang' => 'Sedang',
+            'tinggi' => 'Tinggi'
+        ];
+
+        return $prioritas[$this->prioritas] ?? 'Tidak Diketahui';
     }
 }
-
-

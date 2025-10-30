@@ -1,38 +1,60 @@
 @extends('layouts.app')
-
-@section('title', 'Edit Kategori Pengaduan')
+@section('title', 'Edit Kategori')
 
 @section('content')
-<div class="card shadow-sm">
-    <div class="card-body">
-        <h5 class="mb-3">Edit Kategori Pengaduan</h5>
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Kategori Pengaduan</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('kategori.update', $kategori->kategori_id) }}" method="POST">
+                @csrf @method('PUT')
 
-        <form action="{{ route('kategori.update', $kategori->kategori_id) }}" method="POST">
-            @csrf
-            @method('PUT')
+                <div class="mb-3">
+                    <label class="form-label">Nama Kategori <span class="text-danger">*</span></label>
+                    <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
+                        value="{{ old('nama', $kategori->nama) }}" required>
+                    @error('nama')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-            <div class="mb-3">
-                <label for="nama" class="form-label">Nama Kategori</label>
-                <input type="text" class="form-control" id="nama" name="nama" value="{{ $kategori->nama }}" required>
-            </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">SLA (Hari) <span class="text-danger">*</span></label>
+                        <input type="number" name="sla_hari" class="form-control @error('sla_hari') is-invalid @enderror"
+                            value="{{ old('sla_hari', $kategori->sla_hari) }}" required min="1">
+                        @error('sla_hari')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-            <div class="mb-3">
-                <label for="sla_hari" class="form-label">SLA (Hari)</label>
-                <input type="number" class="form-control" id="sla_hari" name="sla_hari" value="{{ $kategori->sla_hari }}" required>
-            </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Prioritas <span class="text-danger">*</span></label>
+                        <select name="prioritas" class="form-select @error('prioritas') is-invalid @enderror" required>
+                            <option value="">-- Pilih Prioritas --</option>
+                            <option value="rendah"
+                                {{ old('prioritas', $kategori->prioritas) == 'rendah' ? 'selected' : '' }}>Rendah</option>
+                            <option value="sedang"
+                                {{ old('prioritas', $kategori->prioritas) == 'sedang' ? 'selected' : '' }}>Sedang</option>
+                            <option value="tinggi"
+                                {{ old('prioritas', $kategori->prioritas) == 'tinggi' ? 'selected' : '' }}>Tinggi</option>
+                        </select>
+                        @error('prioritas')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
 
-            <div class="mb-3">
-                <label for="prioritas" class="form-label">Prioritas</label>
-                <select class="form-select" id="prioritas" name="prioritas" required>
-                    <option value="rendah" {{ $kategori->prioritas == 'rendah' ? 'selected' : '' }}>Rendah</option>
-                    <option value="sedang" {{ $kategori->prioritas == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                    <option value="tinggi" {{ $kategori->prioritas == 'tinggi' ? 'selected' : '' }}>Tinggi</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('kategori.index') }}" class="btn btn-secondary">Kembali</a>
-        </form>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ route('kategori.index') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-2"></i>Update Kategori
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 @endsection

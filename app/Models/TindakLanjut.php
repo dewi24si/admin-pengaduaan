@@ -9,12 +9,19 @@ class TindakLanjut extends Model
 {
     use HasFactory;
 
-    protected $table = 'tindak_lanjuts';
+    protected $table = 'tindak_lanjut';
+    protected $primaryKey = 'tindak_id';
+
     protected $fillable = [
-        'kategori_pengaduan',
+        'pengaduan_id',
         'petugas',
         'aksi',
         'catatan',
         'foto',
     ];
+
+    public function pengaduan()
+    {
+        return $this->belongsTo(Pengaduan::class, 'pengaduan_id', 'pengaduan_id');
+    }
 }

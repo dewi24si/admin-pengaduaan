@@ -7,13 +7,11 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('tindak_lanjut', function (Blueprint $table) {
-            $table->id('tindak_id');
+        Schema::create('penilaian_layanan', function (Blueprint $table) {
+            $table->id('penilaian_id');
             $table->unsignedBigInteger('pengaduan_id');
-            $table->string('petugas');
-            $table->string('aksi');
-            $table->text('catatan')->nullable();
-            $table->string('foto')->nullable();
+            $table->integer('rating');
+            $table->text('komentar')->nullable();
             $table->timestamps();
 
             $table->foreign('pengaduan_id')
@@ -25,6 +23,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('tindak_lanjut');
+        Schema::dropIfExists('penilaian_layanan');
     }
 };
