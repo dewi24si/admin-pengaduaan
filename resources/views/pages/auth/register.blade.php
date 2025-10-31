@@ -10,7 +10,7 @@
                     <p class="text-muted">Daftar sebagai admin sistem desa</p>
                 </div>
 
-                @include('layouts.partials.flash-messages')
+                @include('layouts.admin.flash-messages')
 
                 <form action="{{ route('register.post') }}" method="POST">
                     @csrf

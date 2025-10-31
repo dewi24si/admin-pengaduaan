@@ -12,14 +12,14 @@ class PengaduanController extends Controller
     public function index()
     {
         $pengaduan = Pengaduan::with(['kategori', 'warga'])->latest()->paginate(10);
-        return view('pengaduan.index', compact('pengaduan'));
+        return view('pages.pengaduan.index', compact('pengaduan'));
     }
 
     public function create()
     {
         $kategori = KategoriPengaduan::all();
         $warga = Warga::all();
-        return view('pengaduan.create', compact('kategori', 'warga'));
+        return view('pages.pengaduan.create', compact('kategori', 'warga'));
     }
 
     public function store(Request $request)
@@ -45,7 +45,7 @@ class PengaduanController extends Controller
         $pengaduan = Pengaduan::findOrFail($id);
         $kategori = KategoriPengaduan::all();
         $warga = Warga::all();
-        return view('pengaduan.edit', compact('pengaduan', 'kategori', 'warga'));
+        return view('pages.pengaduan.edit', compact('pengaduan', 'kategori', 'warga'));
     }
 
     public function update(Request $request, $id)

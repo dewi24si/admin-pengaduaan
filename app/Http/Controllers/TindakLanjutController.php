@@ -12,13 +12,13 @@ class TindakLanjutController extends Controller
     public function index()
     {
         $tindakLanjut = TindakLanjut::with('pengaduan')->latest()->paginate(10);
-        return view('tindak-lanjut.index', compact('tindakLanjut'));
+        return view('pages.tindak-lanjut.index', compact('tindakLanjut'));
     }
 
     public function create()
     {
         $pengaduan = Pengaduan::whereDoesntHave('tindakLanjut')->get();
-        return view('tindak-lanjut.create', compact('pengaduan'));
+        return view('pages.tindak-lanjut.create', compact('pengaduan'));
     }
 
     public function store(Request $request)
@@ -46,7 +46,7 @@ class TindakLanjutController extends Controller
     {
         $tindak = TindakLanjut::findOrFail($id);
         $pengaduan = Pengaduan::all();
-        return view('tindak-lanjut.edit', compact('tindak', 'pengaduan'));
+        return view('pages.tindak-lanjut.edit', compact('tindak', 'pengaduan'));
     }
 
     public function update(Request $request, $id)

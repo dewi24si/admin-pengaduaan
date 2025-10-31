@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $totalKategori = KategoriPengaduan::count();
         $pengaduanTerbaru = Pengaduan::with(['warga', 'kategori'])->latest()->take(5)->get();
 
-        return view('dashboard', compact(
+        return view('pages.dashboard', compact(
             'totalPengaduan',
             'totalWarga',
             'totalKategori',

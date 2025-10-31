@@ -11,13 +11,13 @@ class PenilaianLayananController extends Controller
     public function index()
     {
         $penilaian = PenilaianLayanan::with('pengaduan')->latest()->paginate(10);
-        return view('admin.penilaian.index', compact('penilaian'));
+        return view('pages.penilaian.index', compact('penilaian'));
     }
 
     public function create()
     {
         $pengaduan = Pengaduan::whereDoesntHave('penilaian')->get();
-        return view('admin.penilaian.create', compact('pengaduan'));
+        return view('pages.penilaian.create', compact('pengaduan'));
     }
 
     public function store(Request $request)
@@ -29,14 +29,14 @@ class PenilaianLayananController extends Controller
         ]);
 
         PenilaianLayanan::create($request->all());
-        return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil ditambahkan.');
+        return redirect()->route('pages.penilaian.index')->with('success', 'Penilaian berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $penilaian = PenilaianLayanan::findOrFail($id);
         $pengaduan = Pengaduan::all();
-        return view('admin.penilaian.edit', compact('penilaian', 'pengaduan'));
+        return view('pages.penilaian.edit', compact('penilaian', 'pengaduan'));
     }
 
     public function update(Request $request, $id)
@@ -50,12 +50,12 @@ class PenilaianLayananController extends Controller
         ]);
 
         $penilaian->update($request->all());
-        return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil diperbarui.');
+        return redirect()->route('pages.penilaian.index')->with('success', 'Penilaian berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         PenilaianLayanan::findOrFail($id)->delete();
-        return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil dihapus.');
+        return redirect()->route('pages.penilaian.index')->with('success', 'Penilaian berhasil dihapus.');
     }
 }

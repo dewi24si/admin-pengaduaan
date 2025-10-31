@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | WhatsApp Contact Number
+    |--------------------------------------------------------------------------
+    |
+    | This is the WhatsApp number that will be used for the floating button.
+    | Include the country code without the + symbol.
+    |
+    */
+
+    'whatsapp_number' => env('WHATSAPP_NUMBER', '6285264644223'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

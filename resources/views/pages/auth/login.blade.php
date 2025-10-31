@@ -10,7 +10,7 @@
                     <p class="text-muted">Masuk ke sistem admin desa</p>
                 </div>
 
-                @include('layouts.partials.flash-messages')
+                @include('layouts.admin.flash-messages')
 
                 <form action="{{ route('login.post') }}" method="POST">
                     @csrf

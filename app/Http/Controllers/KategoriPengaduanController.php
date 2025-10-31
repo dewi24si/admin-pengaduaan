@@ -10,12 +10,12 @@ class KategoriPengaduanController extends Controller
     public function index()
     {
         $kategori = KategoriPengaduan::latest()->paginate(10);
-        return view('admin.kategori.index', compact('kategori'));
+        return view('pages.kategori.index', compact('kategori'));
     }
 
     public function create()
     {
-        return view('admin.kategori.create');
+        return view('pages.kategori.create');
     }
 
     public function store(Request $request)
@@ -34,7 +34,7 @@ class KategoriPengaduanController extends Controller
     public function edit($id)
     {
         $kategori = KategoriPengaduan::findOrFail($id);
-        return view('admin.kategori.edit', compact('kategori'));
+        return view('pages.kategori.edit', compact('kategori'));
     }
 
     public function update(Request $request, $id)
