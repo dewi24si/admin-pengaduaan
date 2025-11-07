@@ -29,7 +29,7 @@ class PenilaianLayananController extends Controller
         ]);
 
         PenilaianLayanan::create($request->all());
-        return redirect()->route('pages.penilaian.index')->with('success', 'Penilaian berhasil ditambahkan.');
+        return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -50,12 +50,12 @@ class PenilaianLayananController extends Controller
         ]);
 
         $penilaian->update($request->all());
-        return redirect()->route('pages.penilaian.index')->with('success', 'Penilaian berhasil diperbarui.');
+        return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         PenilaianLayanan::findOrFail($id)->delete();
-        return redirect()->route('pages.penilaian.index')->with('success', 'Penilaian berhasil dihapus.');
+        return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil dihapus.');
     }
 }
