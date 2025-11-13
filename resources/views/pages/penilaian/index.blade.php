@@ -8,53 +8,63 @@
 @endsection
 
 @section('content')
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table table-hover table-bordered align-middle">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>No Tiket</th>
-                            <th>Judul Pengaduan</th>
-                            <th>Rating</th>
-                            <th>Komentar</th>
-                            <th>Tanggal Penilaian</th>
-                            <th>Aksi</th>
+                            <th width="5%">No</th>
+                            <th width="12%">No Tiket</th>
+                            <th width="25%">Judul Pengaduan</th>
+                            <th width="13%">Rating</th>
+                            <th width="25%">Komentar</th>
+                            <th width="12%">Tanggal</th>
+                            <th width="8%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($penilaian as $i => $row)
                             <tr>
                                 <td>{{ ($penilaian->currentPage() - 1) * $penilaian->perPage() + $i + 1 }}</td>
-                                <td><strong>{{ $row->pengaduan->nomor_tiket }}</strong></td>
-                                <td>{{ $row->pengaduan->judul }}</td>
+                                <td><span class="badge bg-primary">{{ $row->pengaduan->nomor_tiket }}</span></td>
+                                <td><strong>{{ $row->pengaduan->judul }}</strong></td>
                                 <td>
-                                    <span class="badge bg-warning text-dark fs-6">
-                                        {{ $row->rating_bintang }}
-                                    </span>
-                                    <br>
-                                    <small class="text-muted">{{ $row->rating_text }}</small>
+                                    <div class="d-flex flex-column">
+                                        <div class="text-warning mb-1">
+                                            {{ $row->rating_bintang }}
+                                        </div>
+                                        <small class="text-muted">{{ $row->rating_text }}</small>
+                                    </div>
                                 </td>
                                 <td>
                                     @if ($row->komentar)
-                                        <span title="{{ $row->komentar }}">
-                                            {{ Str::limit($row->komentar, 50) }}
-                                        </span>
+                                        <div class="text-truncate" style="max-width: 250px;" title="{{ $row->komentar }}">
+                                            <i class="bi bi-chat-quote me-1"></i>{{ $row->komentar }}
+                                        </div>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
-                                <td>{{ $row->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
+                                    <i class="bi bi-calendar3 me-1 text-muted"></i>
+                                    {{ $row->created_at->format('d/m/Y H:i') }}
+                                </td>
+                                <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('penilaian.edit', $row->penilaian_id) }}" class="btn btn-warning">
-                                            <i class="bi bi-pencil"></i>
+                                        <a href="{{ route('penilaian.show', $row->penilaian_id) }}" class="btn btn-info"
+                                            title="Detail">
+                                            <i class="bi bi-eye"></i>
                                         </a>
-                                        <form action="{{ route('penilaian.destroy', $row->penilaian_id) }}" method="POST">
+                                        <a href="{{ route('penilaian.edit', $row->penilaian_id) }}" class="btn btn-warning"
+                                            title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form action="{{ route('penilaian.destroy', $row->penilaian_id) }}" method="POST"
+                                            class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="submit" onclick="return confirm('Yakin hapus penilaian ini?')"
-                                                class="btn btn-danger">
+                                                class="btn btn-danger" title="Hapus">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -63,16 +73,15 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <i class="bi bi-star display-4 text-muted"></i>
-                                    <p class="mt-2 text-muted">Belum ada data penilaian</p>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-star display-1 text-muted"></i>
+                                    <p class="mt-3 text-muted">Belum ada data penilaian</p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
             @if ($penilaian->hasPages())
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">

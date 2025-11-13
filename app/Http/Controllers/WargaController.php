@@ -63,4 +63,9 @@ class WargaController extends Controller
         Warga::findOrFail($id)->delete();
         return redirect()->route('warga.index')->with('success', 'Data warga berhasil dihapus.');
     }
+    public function show($id)
+    {
+        $warga = Warga::findOrFail($id);
+        return view('pages.warga.show', compact('warga'));
+    }
 }

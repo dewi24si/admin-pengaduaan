@@ -2,47 +2,75 @@
 @section('title', 'Login')
 
 @section('content')
-    <div class="container d-flex align-items-center justify-content-center">
-        <div class="card auth-card" style="width: 400px;">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h3 class="fw-bold text-primary">Login Admin</h3>
-                    <p class="text-muted">Masuk ke sistem admin desa</p>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="auth-card">
+                    <div class="row g-0">
+                        <!-- Left Side - Branding -->
+                        <div class="col-md-5">
+                            <div class="auth-image"
+                                style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80');">
+                                <div class="auth-image-content">
+                                    <div class="logo-circle">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <h2>Sistem Pengaduan Desa</h2>
+                                    <p>Kelola pengaduan warga dengan mudah dan efisien</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side - Form -->
+                        <div class="col-md-7">
+                            <div class="auth-form-wrapper">
+                                <div class="auth-header">
+                                    <h3>Selamat Datang</h3>
+                                    <p>Masuk ke akun admin Anda</p>
+                                </div>
+
+                                @include('layouts.admin.flash-messages')
+
+                                <form action="{{ route('login.post') }}" method="POST">
+                                    @csrf
+
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-envelope"></i>
+                                            </span>
+                                            <input type="email" name="email" id="email" class="form-control"
+                                                placeholder="nama@email.com" value="{{ old('email') }}" required autofocus>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="password" class="form-label">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-lock"></i>
+                                            </span>
+                                            <input type="password" name="password" id="password" class="form-control"
+                                                placeholder="Masukkan password" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            Masuk
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="auth-footer">
+                                    Belum punya akun?
+                                    <a href="{{ route('register') }}">Daftar sekarang</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                @include('layouts.admin.flash-messages')
-
-                <form action="{{ route('login.post') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-semibold">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" name="email" id="email" class="form-control"
-                                placeholder="Masukkan email" value="{{ old('email') }}" required autofocus>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-semibold">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="password" id="password" class="form-control"
-                                placeholder="Masukkan password" required>
-                        </div>
-                    </div>
-
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary py-2">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
-                        </button>
-                    </div>
-                </form>
-
-                <p class="text-center mt-4 mb-0">
-                    Belum punya akun?
-                    <a href="{{ route('register') }}" class="text-decoration-none fw-semibold">Daftar di sini</a>
-                </p>
             </div>
         </div>
     </div>

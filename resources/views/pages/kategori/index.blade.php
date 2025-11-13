@@ -8,40 +8,62 @@
 @endsection
 
 @section('content')
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table table-hover table-bordered align-middle">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Nama Kategori</th>
-                            <th>SLA (Hari)</th>
-                            <th>Prioritas</th>
-                            <th>Aksi</th>
+                            <th width="8%">No</th>
+                            <th width="40%">Nama Kategori</th>
+                            <th width="15%">SLA (Hari)</th>
+                            <th width="20%">Prioritas</th>
+                            <th width="17%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($kategori as $i => $row)
                             <tr>
                                 <td>{{ ($kategori->currentPage() - 1) * $kategori->perPage() + $i + 1 }}</td>
-                                <td>{{ $row->nama }}</td>
-                                <td>{{ $row->sla_hari }} hari</td>
                                 <td>
-                                    <span
-                                        class="badge bg-{{ $row->prioritas == 'tinggi' ? 'danger' : ($row->prioritas == 'sedang' ? 'warning' : 'secondary') }}">
-                                        {{ $row->prioritas_text }}
+                                    <i class="bi bi-tag me-2 text-muted"></i>
+                                    <strong>{{ $row->nama }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark">
+                                        <i class="bi bi-clock me-1"></i>{{ $row->sla_hari }} hari
                                     </span>
                                 </td>
                                 <td>
+                                    @if ($row->prioritas == 'tinggi')
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-arrow-up-circle me-1"></i>{{ $row->prioritas_text }}
+                                        </span>
+                                    @elseif($row->prioritas == 'sedang')
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-dash-circle me-1"></i>{{ $row->prioritas_text }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-arrow-down-circle me-1"></i>{{ $row->prioritas_text }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('kategori.edit', $row->kategori_id) }}" class="btn btn-warning">
-                                            <i class="bi bi-pencil"></i>
+                                        <a href="{{ route('kategori.show', $row->kategori_id) }}" class="btn btn-info"
+                                            title="Detail">
+                                            <i class="bi bi-eye"></i>
                                         </a>
-                                        <form action="{{ route('kategori.destroy', $row->kategori_id) }}" method="POST">
+                                        <a href="{{ route('kategori.edit', $row->kategori_id) }}" class="btn btn-warning"
+                                            title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form action="{{ route('kategori.destroy', $row->kategori_id) }}" method="POST"
+                                            class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="submit" onclick="return confirm('Yakin hapus kategori ini?')"
-                                                class="btn btn-danger">
+                                                class="btn btn-danger" title="Hapus">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -50,9 +72,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <i class="bi bi-tags display-4 text-muted"></i>
-                                    <p class="mt-2 text-muted">Belum ada data kategori</p>
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="bi bi-tags display-1 text-muted"></i>
+                                    <p class="mt-3 text-muted">Belum ada data kategori</p>
                                 </td>
                             </tr>
                         @endforelse

@@ -58,4 +58,9 @@ class KategoriPengaduanController extends Controller
 
         return redirect()->route('kategori.index')->with('success', 'Kategori pengaduan berhasil dihapus.');
     }
+    public function show($id)
+    {
+        $kategori = KategoriPengaduan::findOrFail($id);
+        return view('pages.kategori.show', compact('kategori'));
+    }
 }

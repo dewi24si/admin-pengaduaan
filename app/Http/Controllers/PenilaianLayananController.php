@@ -58,4 +58,9 @@ class PenilaianLayananController extends Controller
         PenilaianLayanan::findOrFail($id)->delete();
         return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil dihapus.');
     }
+    public function show($id)
+    {
+        $penilaian = PenilaianLayanan::with('pengaduan')->findOrFail($id);
+        return view('pages.penilaian.show', compact('penilaian'));
+    }
 }

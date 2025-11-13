@@ -8,43 +8,67 @@
 @endsection
 
 @section('content')
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table table-hover table-bordered align-middle">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>No KTP</th>
-                            <th>Nama</th>
-                            <th>Jenis Kelamin</th>
-                            <th>Agama</th>
-                            <th>Pekerjaan</th>
-                            <th>Telepon</th>
-                            <th>Email</th>
-                            <th>Aksi</th>
+                            <th width="4%">No</th>
+                            <th width="12%">No KTP</th>
+                            <th width="18%">Nama</th>
+                            <th width="10%">Jenis Kelamin</th>
+                            <th width="10%">Agama</th>
+                            <th width="15%">Pekerjaan</th>
+                            <th width="12%">Telepon</th>
+                            <th width="15%">Email</th>
+                            <th width="12%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($warga as $i => $row)
                             <tr>
                                 <td>{{ ($warga->currentPage() - 1) * $warga->perPage() + $i + 1 }}</td>
-                                <td>{{ $row->no_ktp }}</td>
-                                <td>{{ $row->nama }}</td>
-                                <td>{{ $row->jenis_kelamin_text }}</td>
+                                <td><code>{{ $row->no_ktp }}</code></td>
+                                <td><strong>{{ $row->nama }}</strong></td>
+                                <td>
+                                    @if ($row->jenis_kelamin == 'L')
+                                        <span class="badge bg-primary">
+                                            <i class="bi bi-gender-male me-1"></i>{{ $row->jenis_kelamin_text }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-gender-female me-1"></i>{{ $row->jenis_kelamin_text }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td>{{ $row->agama }}</td>
                                 <td>{{ $row->pekerjaan }}</td>
-                                <td>{{ $row->telp }}</td>
-                                <td>{{ $row->email ?? '-' }}</td>
                                 <td>
+                                    <i class="bi bi-telephone me-1"></i>{{ $row->telp }}
+                                </td>
+                                <td>
+                                    @if ($row->email)
+                                        <i class="bi bi-envelope me-1"></i>{{ $row->email }}
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('warga.edit', $row->warga_id) }}" class="btn btn-warning">
-                                            <i class="bi bi-pencil"></i>
+                                        <a href="{{ route('warga.show', $row->warga_id) }}" class="btn btn-info"
+                                            title="Detail">
+                                            <i class="bi bi-eye"></i>
                                         </a>
-                                        <form action="{{ route('warga.destroy', $row->warga_id) }}" method="POST">
+                                        <a href="{{ route('warga.edit', $row->warga_id) }}" class="btn btn-warning"
+                                            title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form action="{{ route('warga.destroy', $row->warga_id) }}" method="POST"
+                                            class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="submit" onclick="return confirm('Yakin hapus data warga ini?')"
-                                                class="btn btn-danger">
+                                                class="btn btn-danger" title="Hapus">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -53,9 +77,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-4">
-                                    <i class="bi bi-people display-4 text-muted"></i>
-                                    <p class="mt-2 text-muted">Belum ada data warga</p>
+                                <td colspan="9" class="text-center py-5">
+                                    <i class="bi bi-people display-1 text-muted"></i>
+                                    <p class="mt-3 text-muted">Belum ada data warga</p>
                                 </td>
                             </tr>
                         @endforelse

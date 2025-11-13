@@ -87,4 +87,9 @@ class TindakLanjutController extends Controller
 
         return redirect()->route('tindak.index')->with('success', 'Tindak lanjut berhasil dihapus.');
     }
+    public function show($id)
+    {
+        $tindak = TindakLanjut::with('pengaduan')->findOrFail($id);
+        return view('pages.tindak-lanjut.show', compact('tindak'));
+    }
 }

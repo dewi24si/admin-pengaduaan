@@ -73,4 +73,9 @@ class PengaduanController extends Controller
         Pengaduan::findOrFail($id)->delete();
         return redirect()->route('pengaduan.index')->with('success', 'Data pengaduan berhasil dihapus.');
     }
+    public function show($id)
+    {
+        $pengaduan = Pengaduan::with(['kategori', 'warga', 'tindakLanjut', 'penilaian'])->findOrFail($id);
+        return view('pages.pengaduan.show', compact('pengaduan'));
+    }
 }
