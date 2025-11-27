@@ -10,6 +10,47 @@
 @section('content')
     <div class="card shadow-sm border-0">
         <div class="card-body">
+
+            {{-- Form Search & Filter --}}
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ route('warga.index') }}" method="GET" class="row g-2">
+                        {{-- Search global --}}
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control"
+                                   placeholder="Cari NIK / nama / telp / email..."
+                                   value="{{ request('search') }}">
+                        </div>
+
+                        {{-- Filter Jenis Kelamin --}}
+                        <div class="col-md-3">
+                            <select name="jenis_kelamin" class="form-select">
+                                <option value="">-- Semua Jenis Kelamin --</option>
+                                <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
+                        </div>
+
+                        {{-- Filter Agama --}}
+                        <div class="col-md-3">
+                            <input type="text" name="agama" class="form-control"
+                                   placeholder="Filter agama..."
+                                   value="{{ request('agama') }}">
+                        </div>
+
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-search me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Tabel --}}
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>
@@ -87,7 +128,7 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
+            {{-- Pagination --}}
             @if ($warga->hasPages())
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">

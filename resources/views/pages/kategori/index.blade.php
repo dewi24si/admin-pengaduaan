@@ -10,6 +10,36 @@
 @section('content')
     <div class="card shadow-sm border-0">
         <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <form action="{{ route('kategori.index') }}" method="GET" class="row g-2">
+                        <div class="col-md-5">
+                            <input type="text" name="search" class="form-control"
+                                placeholder="Cari nama kategori..."
+                                value="{{ request('search') }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <select name="prioritas" class="form-select">
+                                <option value="">-- Semua Prioritas --</option>
+                                <option value="tinggi" {{ request('prioritas') == 'tinggi' ? 'selected' : '' }}>Tinggi</option>
+                                <option value="sedang" {{ request('prioritas') == 'sedang' ? 'selected' : '' }}>Sedang</option>
+                                <option value="rendah" {{ request('prioritas') == 'rendah' ? 'selected' : '' }}>Rendah</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-search me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('kategori.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>

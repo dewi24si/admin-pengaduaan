@@ -10,6 +10,44 @@
 @section('content')
     <div class="card shadow-sm border-0">
         <div class="card-body">
+            {{-- Filter & Search --}}
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <form action="{{ route('penilaian.index') }}" method="GET" class="row g-2">
+                        <div class="col-md-6">
+                            <input
+                                type="text"
+                                name="search"
+                                class="form-control"
+                                placeholder="Cari no tiket / judul pengaduan..."
+                                value="{{ request('search') }}"
+                            >
+                        </div>
+
+                        <div class="col-md-3">
+                            <select name="rating" class="form-select">
+                                <option value="">-- Semua Rating --</option>
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <option value="{{ $i }}" {{ request('rating') == $i ? 'selected' : '' }}>
+                                        {{ $i }} Bintang
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-search me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('penilaian.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Tabel --}}
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>
@@ -82,6 +120,7 @@
                     </tbody>
                 </table>
             </div>
+
             @if ($penilaian->hasPages())
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">

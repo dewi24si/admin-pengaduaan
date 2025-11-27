@@ -9,9 +9,35 @@ use Illuminate\Support\Facades\Storage;
 
 class TindakLanjutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tindakLanjut = TindakLanjut::with('pengaduan')->latest()->paginate(10);
+        $query = TindakLanjut::with('pengaduan')->latest();
+
+        // Search: tiket / judul / petugas / aksi
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('petugas', 'like', "%{$search}%")
+                  ->orWhere('aksi', 'like', "%{$search}%")
+                  ->orWhereHas('pengaduan', function ($qp) use ($search) {
+                      $qp->where('nomor_tiket', 'like', "%{$search}%")
+                         ->orWhere('judul', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter: ada foto / tidak
+        if ($request->filled('has_foto')) {
+            if ($request->has_foto == '1') {
+                $query->whereNotNull('foto');
+            } elseif ($request->has_foto == '0') {
+                $query->whereNull('foto');
+            }
+        }
+
+        $tindakLanjut = $query->paginate(10)->appends($request->query());
+
         return view('pages.tindak-lanjut.index', compact('tindakLanjut'));
     }
 
@@ -25,10 +51,10 @@ class TindakLanjutController extends Controller
     {
         $request->validate([
             'pengaduan_id' => 'required|exists:pengaduan,pengaduan_id|unique:tindak_lanjut,pengaduan_id',
-            'petugas' => 'required|string|max:255',
-            'aksi' => 'required|string|max:255',
-            'catatan' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'petugas'      => 'required|string|max:255',
+            'aksi'         => 'required|string|max:255',
+            'catatan'      => 'nullable|string',
+            'foto'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $data = $request->only(['pengaduan_id', 'petugas', 'aksi', 'catatan']);
@@ -55,10 +81,10 @@ class TindakLanjutController extends Controller
 
         $request->validate([
             'pengaduan_id' => 'required|exists:pengaduan,pengaduan_id|unique:tindak_lanjut,pengaduan_id,' . $tindak->tindak_id . ',tindak_id',
-            'petugas' => 'required|string|max:255',
-            'aksi' => 'required|string|max:255',
-            'catatan' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'petugas'      => 'required|string|max:255',
+            'aksi'         => 'required|string|max:255',
+            'catatan'      => 'nullable|string',
+            'foto'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $data = $request->only(['pengaduan_id', 'petugas', 'aksi', 'catatan']);
@@ -87,6 +113,7 @@ class TindakLanjutController extends Controller
 
         return redirect()->route('tindak.index')->with('success', 'Tindak lanjut berhasil dihapus.');
     }
+
     public function show($id)
     {
         $tindak = TindakLanjut::with('pengaduan')->findOrFail($id);

@@ -7,9 +7,34 @@ use Illuminate\Http\Request;
 
 class WargaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $warga = Warga::latest()->paginate(10);
+        $query = Warga::query()->latest();
+
+        // Search: no_ktp / nama / telp / email
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('no_ktp', 'like', "%{$search}%")
+                  ->orWhere('nama', 'like', "%{$search}%")
+                  ->orWhere('telp', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter: jenis kelamin
+        if ($request->filled('jenis_kelamin')) {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+
+        // Filter: agama (exact match, bisa kamu ubah ke like kalau mau lebih fleksibel)
+        if ($request->filled('agama')) {
+            $query->where('agama', 'like', "%{$request->agama}%");
+        }
+
+        $warga = $query->paginate(10)->appends($request->query());
+
         return view('pages.warga.index', compact('warga'));
     }
 
@@ -63,6 +88,7 @@ class WargaController extends Controller
         Warga::findOrFail($id)->delete();
         return redirect()->route('warga.index')->with('success', 'Data warga berhasil dihapus.');
     }
+
     public function show($id)
     {
         $warga = Warga::findOrFail($id);

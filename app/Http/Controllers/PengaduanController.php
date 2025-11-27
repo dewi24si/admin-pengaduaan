@@ -9,10 +9,39 @@ use Illuminate\Http\Request;
 
 class PengaduanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pengaduan = Pengaduan::with(['kategori', 'warga'])->latest()->paginate(10);
-        return view('pages.pengaduan.index', compact('pengaduan'));
+        $query = Pengaduan::with(['kategori', 'warga'])->latest();
+
+        // Search (no tiket / judul / nama warga)
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('nomor_tiket', 'like', "%{$search}%")
+                    ->orWhere('judul', 'like', "%{$search}%")
+                    ->orWhereHas('warga', function ($qw) use ($search) {
+                        $qw->where('nama', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by kategori
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        $pengaduan = $query->paginate(10)->appends($request->query());
+
+        // list kategori untuk dropdown filter
+        $kategoriList = KategoriPengaduan::all();
+
+        return view('pages.pengaduan.index', compact('pengaduan', 'kategoriList'));
     }
 
     public function create()
@@ -73,6 +102,7 @@ class PengaduanController extends Controller
         Pengaduan::findOrFail($id)->delete();
         return redirect()->route('pengaduan.index')->with('success', 'Data pengaduan berhasil dihapus.');
     }
+
     public function show($id)
     {
         $pengaduan = Pengaduan::with(['kategori', 'warga', 'tindakLanjut', 'penilaian'])->findOrFail($id);

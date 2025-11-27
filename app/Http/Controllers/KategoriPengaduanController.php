@@ -7,11 +7,26 @@ use Illuminate\Http\Request;
 
 class KategoriPengaduanController extends Controller
 {
-    public function index()
-    {
-        $kategori = KategoriPengaduan::latest()->paginate(10);
-        return view('pages.kategori.index', compact('kategori'));
+    public function index(Request $request)
+{
+    $query = KategoriPengaduan::query()->latest();
+
+    // Search by nama
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where('nama', 'like', "%{$search}%");
     }
+
+    // Filter by prioritas
+    if ($request->filled('prioritas')) {
+        $query->where('prioritas', $request->prioritas);
+    }
+
+    $kategori = $query->paginate(10)->appends($request->query());
+
+    return view('pages.kategori.index', compact('kategori'));
+}
+
 
     public function create()
     {

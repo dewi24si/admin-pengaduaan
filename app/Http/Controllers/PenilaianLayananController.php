@@ -8,9 +8,27 @@ use Illuminate\Http\Request;
 
 class PenilaianLayananController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $penilaian = PenilaianLayanan::with('pengaduan')->latest()->paginate(10);
+        $query = PenilaianLayanan::with('pengaduan')->latest();
+
+        // Search: cari di nomor tiket atau judul pengaduan
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->whereHas('pengaduan', function ($q) use ($search) {
+                $q->where('nomor_tiket', 'like', "%{$search}%")
+                  ->orWhere('judul', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter: berdasarkan rating
+        if ($request->filled('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        $penilaian = $query->paginate(10)->appends($request->query());
+
         return view('pages.penilaian.index', compact('penilaian'));
     }
 
@@ -58,6 +76,7 @@ class PenilaianLayananController extends Controller
         PenilaianLayanan::findOrFail($id)->delete();
         return redirect()->route('penilaian.index')->with('success', 'Penilaian berhasil dihapus.');
     }
+
     public function show($id)
     {
         $penilaian = PenilaianLayanan::with('pengaduan')->findOrFail($id);

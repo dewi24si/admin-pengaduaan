@@ -10,6 +10,47 @@
 @section('content')
     <div class="card shadow-sm">
         <div class="card-body">
+
+            {{-- Form Search & Filter --}}
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ route('users.index') }}" method="GET" class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <input type="text"
+                                   name="search"
+                                   class="form-control"
+                                   placeholder="Cari nama / email..."
+                                   value="{{ request('search') }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <select name="registered" class="form-select">
+                                <option value="">-- Semua Tanggal Registrasi --</option>
+                                <option value="today" {{ request('registered') == 'today' ? 'selected' : '' }}>
+                                    Hari ini
+                                </option>
+                                <option value="week" {{ request('registered') == 'week' ? 'selected' : '' }}>
+                                    7 hari terakhir
+                                </option>
+                                <option value="month" {{ request('registered') == 'month' ? 'selected' : '' }}>
+                                    30 hari terakhir
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-search me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Tabel --}}
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>
@@ -78,7 +119,7 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
+            {{-- Pagination --}}
             @if ($users->hasPages())
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">

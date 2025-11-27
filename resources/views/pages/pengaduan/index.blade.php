@@ -10,6 +10,50 @@
 @section('content')
     <div class="card shadow-sm border-0">
         <div class="card-body">
+            {{-- Search & Filter --}}
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ route('pengaduan.index') }}" method="GET" class="row g-2">
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control"
+                                placeholder="Cari no tiket / judul / nama warga..."
+                                value="{{ request('search') }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <select name="kategori_id" class="form-select">
+                                <option value="">-- Semua Kategori --</option>
+                                @foreach ($kategoriList as $kat)
+                                    <option value="{{ $kat->kategori_id }}"
+                                        {{ request('kategori_id') == $kat->kategori_id ? 'selected' : '' }}>
+                                        {{ $kat->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <select name="status" class="form-select">
+                                <option value="">-- Semua Status --</option>
+                                <option value="baru" {{ request('status') == 'baru' ? 'selected' : '' }}>Baru</option>
+                                <option value="proses" {{ request('status') == 'proses' ? 'selected' : '' }}>Proses</option>
+                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-search me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('pengaduan.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Tabel --}}
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>

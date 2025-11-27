@@ -10,6 +10,37 @@
 @section('content')
     <div class="card shadow-sm border-0">
         <div class="card-body">
+            {{-- Form Search & Filter --}}
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ route('tindak.index') }}" method="GET" class="row g-2">
+                        <div class="col-md-6">
+                            <input type="text" name="search" class="form-control"
+                                   placeholder="Cari tiket / judul / petugas / aksi..."
+                                   value="{{ request('search') }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <select name="has_foto" class="form-select">
+                                <option value="">-- Semua Foto --</option>
+                                <option value="1" {{ request('has_foto') === '1' ? 'selected' : '' }}>Dengan Foto</option>
+                                <option value="0" {{ request('has_foto') === '0' ? 'selected' : '' }}>Tanpa Foto</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-search me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('tindak.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Tabel --}}
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>
