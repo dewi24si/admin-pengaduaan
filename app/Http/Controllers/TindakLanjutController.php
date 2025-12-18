@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TindakLanjut;
 use App\Models\Pengaduan;
+use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,20 +20,20 @@ class TindakLanjutController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('petugas', 'like', "%{$search}%")
-                  ->orWhere('aksi', 'like', "%{$search}%")
-                  ->orWhereHas('pengaduan', function ($qp) use ($search) {
-                      $qp->where('nomor_tiket', 'like', "%{$search}%")
-                         ->orWhere('judul', 'like', "%{$search}%");
-                  });
+                    ->orWhere('aksi', 'like', "%{$search}%")
+                    ->orWhereHas('pengaduan', function ($qp) use ($search) {
+                        $qp->where('nomor_tiket', 'like', "%{$search}%")
+                            ->orWhere('judul', 'like', "%{$search}%");
+                    });
             });
         }
 
         // Filter: ada foto / tidak
         if ($request->filled('has_foto')) {
             if ($request->has_foto == '1') {
-                $query->whereNotNull('foto');
+                $query->whereHas('media');
             } elseif ($request->has_foto == '0') {
-                $query->whereNull('foto');
+                $query->whereDoesntHave('media');
             }
         }
 
@@ -51,19 +52,21 @@ class TindakLanjutController extends Controller
     {
         $request->validate([
             'pengaduan_id' => 'required|exists:pengaduan,pengaduan_id|unique:tindak_lanjut,pengaduan_id',
-            'petugas'      => 'required|string|max:255',
-            'aksi'         => 'required|string|max:255',
-            'catatan'      => 'nullable|string',
-            'foto'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'petugas' => 'required|string|max:255',
+            'aksi' => 'required|string|max:255',
+            'catatan' => 'nullable|string',
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
         ]);
 
         $data = $request->only(['pengaduan_id', 'petugas', 'aksi', 'catatan']);
 
-        if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('tindak', 'public');
-        }
+        // Create tindak lanjut
+        $tindak = TindakLanjut::create($data);
 
-        TindakLanjut::create($data);
+        // Upload files jika ada
+        if ($request->hasFile('files')) {
+            $this->uploadMediaFiles($request, $tindak->tindak_id, 'tindak_lanjut');
+        }
 
         return redirect()->route('tindak.index')->with('success', 'Tindak lanjut berhasil ditambahkan.');
     }
@@ -72,7 +75,12 @@ class TindakLanjutController extends Controller
     {
         $tindak = TindakLanjut::findOrFail($id);
         $pengaduan = Pengaduan::all();
-        return view('pages.tindak-lanjut.edit', compact('tindak', 'pengaduan'));
+        $mediaFiles = Media::where('ref_table', 'tindak_lanjut')
+            ->where('ref_id', $id)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        return view('pages.tindak-lanjut.edit', compact('tindak', 'pengaduan', 'mediaFiles'));
     }
 
     public function update(Request $request, $id)
@@ -81,22 +89,29 @@ class TindakLanjutController extends Controller
 
         $request->validate([
             'pengaduan_id' => 'required|exists:pengaduan,pengaduan_id|unique:tindak_lanjut,pengaduan_id,' . $tindak->tindak_id . ',tindak_id',
-            'petugas'      => 'required|string|max:255',
-            'aksi'         => 'required|string|max:255',
-            'catatan'      => 'nullable|string',
-            'foto'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'petugas' => 'required|string|max:255',
+            'aksi' => 'required|string|max:255',
+            'catatan' => 'nullable|string',
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
+            'delete_media' => 'nullable|string', 
         ]);
 
         $data = $request->only(['pengaduan_id', 'petugas', 'aksi', 'catatan']);
+        $tindak->update($data);
 
-        if ($request->hasFile('foto')) {
-            if ($tindak->foto) {
-                Storage::disk('public')->delete($tindak->foto);
-            }
-            $data['foto'] = $request->file('foto')->store('tindak', 'public');
+        // Upload new files
+        if ($request->hasFile('files')) {
+            $this->uploadMediaFiles($request, $tindak->tindak_id, 'tindak_lanjut');
         }
 
-        $tindak->update($data);
+        // Delete selected media files (convert string to array)
+        if ($request->filled('delete_media')) {
+            $mediaIds = explode(',', $request->delete_media);
+            $mediaIds = array_filter($mediaIds); 
+            if (!empty($mediaIds)) {
+                $this->deleteMediaFiles($mediaIds, $tindak->tindak_id, 'tindak_lanjut');
+            }
+        }
 
         return redirect()->route('tindak.index')->with('success', 'Tindak lanjut berhasil diperbarui.');
     }
@@ -105,10 +120,10 @@ class TindakLanjutController extends Controller
     {
         $tindak = TindakLanjut::findOrFail($id);
 
-        if ($tindak->foto) {
-            Storage::disk('public')->delete($tindak->foto);
-        }
+        // Delete all media files
+        $this->deleteMediaFiles(null, $tindak->tindak_id, 'tindak_lanjut');
 
+        // Delete tindak lanjut
         $tindak->delete();
 
         return redirect()->route('tindak.index')->with('success', 'Tindak lanjut berhasil dihapus.');
@@ -117,6 +132,92 @@ class TindakLanjutController extends Controller
     public function show($id)
     {
         $tindak = TindakLanjut::with('pengaduan')->findOrFail($id);
-        return view('pages.tindak-lanjut.show', compact('tindak'));
+        $mediaFiles = Media::where('ref_table', 'tindak_lanjut')
+            ->where('ref_id', $id)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        return view('pages.tindak-lanjut.show', compact('tindak', 'mediaFiles'));
+    }
+
+    /**
+     * Helper method untuk upload media files
+     */
+    private function uploadMediaFiles(Request $request, $refId, $refTable)
+    {
+        if ($request->hasFile('files')) {
+            $files = $request->file('files');
+
+            foreach ($files as $file) {
+                if ($file->isValid()) {
+                    $originalName = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+                    $fileName = time() . '_' . uniqid() . '.' . $extension;
+
+                    // Store file
+                    $file->storeAs('uploads', $fileName, 'public');
+
+                    // Create media record
+                    Media::create([
+                        'ref_table' => $refTable,
+                        'ref_id' => $refId,
+                        'file_name' => $fileName,
+                        'caption' => pathinfo($originalName, PATHINFO_FILENAME),
+                        'mime_type' => $file->getMimeType(),
+                        'sort_order' => Media::where('ref_table', $refTable)
+                            ->where('ref_id', $refId)
+                            ->max('sort_order') + 1
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method untuk delete media files
+     */
+    private function deleteMediaFiles($mediaIds, $refId, $refTable)
+    {
+        $query = Media::where('ref_table', $refTable)
+            ->where('ref_id', $refId);
+
+        if ($mediaIds) {
+            $query->whereIn('media_id', (array) $mediaIds);
+        }
+
+        $mediaFiles = $query->get();
+
+        foreach ($mediaFiles as $media) {
+            // Delete file from storage
+            $filePath = 'uploads/' . $media->file_name;
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+
+            // Delete record
+            $media->delete();
+        }
+    }
+
+    /**
+     * Delete single media file
+     */
+    public function deleteMediaFile($id, $mediaId)
+    {
+        $media = Media::where('media_id', $mediaId)
+            ->where('ref_table', 'tindak_lanjut')
+            ->where('ref_id', $id)
+            ->firstOrFail();
+
+        // Delete file from storage
+        $filePath = 'uploads/' . $media->file_name;
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+        }
+
+        // Delete record
+        $media->delete();
+
+        return response()->json(['success' => true]);
     }
 }

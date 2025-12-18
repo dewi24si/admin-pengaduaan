@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         KategoriPengaduanSeeder::class, // Parent table 1
         WargaSeeder::class,             // Parent table 2
         PengaduanSeeder::class,         // Child table (relies on others)
+        UserSeeder::class,              // Users table
     ]);
 }
 }

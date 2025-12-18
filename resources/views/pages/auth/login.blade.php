@@ -26,7 +26,7 @@
                             <div class="auth-form-wrapper">
                                 <div class="auth-header">
                                     <h3>Selamat Datang</h3>
-                                    <p>Masuk ke akun admin Anda</p>
+                                    <p>Masuk ke akun Anda</p>
                                 </div>
 
                                 @include('layouts.admin.flash-messages')
@@ -65,7 +65,12 @@
 
                                 <div class="auth-footer">
                                     Belum punya akun?
-                                    <a href="{{ route('register') }}">Daftar sekarang</a>
+                                    <a href="{{ route('register') }}">Daftar sebagai Petugas</a>
+                                </div>
+                                <div class="text-center mt-4 pt-3 border-top">
+                                    <a href="{{ route('about') }}" class="text-decoration-none text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>Tentang Pengembang
+                                    </a>
                                 </div>
                             </div>
                         </div>

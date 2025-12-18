@@ -16,8 +16,7 @@
                     <form action="{{ route('pengaduan.index') }}" method="GET" class="row g-2">
                         <div class="col-md-4">
                             <input type="text" name="search" class="form-control"
-                                placeholder="Cari no tiket / judul / nama warga..."
-                                value="{{ request('search') }}">
+                                placeholder="Cari no tiket / judul / nama warga..." value="{{ request('search') }}">
                         </div>
 
                         <div class="col-md-3">
@@ -37,7 +36,8 @@
                                 <option value="">-- Semua Status --</option>
                                 <option value="baru" {{ request('status') == 'baru' ? 'selected' : '' }}>Baru</option>
                                 <option value="proses" {{ request('status') == 'proses' ? 'selected' : '' }}>Proses</option>
-                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai
+                                </option>
                             </select>
                         </div>
 
@@ -59,17 +59,21 @@
                     <thead>
                         <tr>
                             <th width="4%">No</th>
-                            <th width="10%">No Tiket</th>
-                            <th width="15%">Warga</th>
-                            <th width="22%">Judul</th>
-                            <th width="13%">Kategori</th>
+                            <th width="9%">No Tiket</th>
+                            <th width="14%">Warga</th>
+                            <th width="20%">Judul</th>
+                            <th width="12%">Kategori</th>
                             <th width="12%">Status</th>
                             <th width="14%">Lokasi</th>
-                            <th width="10%" class="text-center">Aksi</th>
+                            <th width="10%" class="text-center">Foto</th>
+                            <th width="5%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($pengaduan as $i => $row)
+                            @php
+                                $mediaCount = $row->media()->count();
+                            @endphp
                             <tr>
                                 <td>{{ ($pengaduan->currentPage() - 1) * $pengaduan->perPage() + $i + 1 }}</td>
                                 <td><span class="badge bg-secondary">{{ $row->nomor_tiket }}</span></td>
@@ -105,6 +109,15 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
+                                    @if ($mediaCount > 0)
+                                        <span class="badge bg-success" title="{{ $mediaCount }} foto">
+                                            <i class="bi bi-image me-1"></i>{{ $mediaCount }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
                                     <div class="btn-group btn-group-sm">
                                         <a href="{{ route('pengaduan.show', $row->pengaduan_id) }}" class="btn btn-info"
                                             title="Detail">
@@ -114,20 +127,23 @@
                                             title="Edit">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <form action="{{ route('pengaduan.destroy', $row->pengaduan_id) }}" method="POST"
-                                            class="d-inline">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Yakin hapus pengaduan ini?')"
-                                                class="btn btn-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        @if (auth()->user()->isAdmin())
+                                            <form action="{{ route('pengaduan.destroy', $row->pengaduan_id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    onclick="return confirm('Yakin hapus pengaduan ini?')"
+                                                    class="btn btn-danger" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-5">
+                                <td colspan="9" class="text-center py-5">
                                     <i class="bi bi-chat-left-text display-1 text-muted"></i>
                                     <p class="mt-3 text-muted">Belum ada data pengaduan</p>
                                 </td>

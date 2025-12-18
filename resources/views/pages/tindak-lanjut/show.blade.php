@@ -10,7 +10,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-8">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-success text-white">
                     <h5 class="card-title mb-0">
                         <i class="bi bi-clipboard-check me-2"></i>Detail Tindak Lanjut
@@ -64,38 +64,60 @@
                     </div>
                 </div>
             </div>
+
+            <!-- MEDIA FILES SECTION -->
+            @if ($mediaFiles && $mediaFiles->count() > 0)
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-files me-2"></i>File Pendukung
+                            <small class="float-end">Total: {{ $mediaFiles->count() }} file</small>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach ($mediaFiles as $media)
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <div class="mb-2">
+                                                <i
+                                                    class="bi {{ $media->file_icon }} display-4 
+                                            {{ $media->is_image ? 'text-success' : 'text-primary' }}"></i>
+                                            </div>
+                                            <h6 class="card-title text-truncate">{{ $media->caption ?? $media->file_name }}
+                                            </h6>
+                                            <p class="card-text small text-muted">
+                                                {{ strtoupper(pathinfo($media->file_name, PATHINFO_EXTENSION)) }}
+                                                <br>
+                                                <small>{{ $media->created_at->format('d/m/Y') }}</small>
+                                            </p>
+                                        </div>
+                                        <div class="card-footer bg-transparent border-top-0">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <a href="{{ $media->file_url }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye me-1"></i>Lihat
+                                                </a>
+                                                <a href="{{ $media->file_url }}" download
+                                                    class="btn btn-sm btn-outline-success">
+                                                    <i class="bi bi-download me-1"></i>Unduh
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="col-md-4">
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-info text-white">
-                    <h6 class="card-title mb-0">
-                        <i class="bi bi-image me-2"></i>Foto Dokumentasi
-                    </h6>
-                </div>
-                <div class="card-body text-center">
-                    @if ($tindak->foto)
-                        <a href="{{ asset('storage/' . $tindak->foto) }}" target="_blank">
-                            <img src="{{ asset('storage/' . $tindak->foto) }}" alt="Foto Tindak Lanjut"
-                                class="img-fluid rounded shadow-sm" style="max-height: 200px;">
-                        </a>
-                        <div class="mt-2">
-                            <a href="{{ asset('storage/' . $tindak->foto) }}" target="_blank"
-                                class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-zoom-in me-1"></i>Lihat Full Size
-                            </a>
-                        </div>
-                    @else
-                        <div class="text-muted py-4">
-                            <i class="bi bi-image display-6"></i>
-                            <p class="mt-2 mb-0">Tidak ada foto</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark">
                     <h6 class="card-title mb-0">
                         <i class="bi bi-info-circle me-2"></i>Informasi Pengaduan
                     </h6>
@@ -125,6 +147,23 @@
                     </p>
                 </div>
             </div>
+
+            @if ($tindak->pengaduan->penilaian)
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-star me-2"></i>Penilaian
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Rating:</strong> {{ $tindak->pengaduan->penilaian->rating_bintang }}</p>
+                        <p><strong>Status:</strong> {{ $tindak->pengaduan->penilaian->rating_text }}</p>
+                        @if ($tindak->pengaduan->penilaian->komentar)
+                            <p><strong>Komentar:</strong> {{ $tindak->pengaduan->penilaian->komentar }}</p>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection

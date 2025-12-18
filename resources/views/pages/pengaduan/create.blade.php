@@ -7,7 +7,7 @@
             <h5 class="mb-0"><i class="bi bi-chat-left-text me-2"></i>Tambah Pengaduan</h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('pengaduan.store') }}" method="POST">
+            <form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data" id="pengaduanForm">
                 @csrf
 
                 <div class="row">
@@ -113,6 +113,46 @@
                     </div>
                 </div>
 
+                <!-- FILE UPLOAD SECTION FOR COVER/FOTO BERITA -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">
+                            <i class="bi bi-images me-2"></i>Foto/Cover Berita
+                            <small class="text-muted">(Opsional)</small>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Pilih Foto</label>
+                            <input type="file" name="files[]" id="fileInput"
+                                class="form-control @error('files.*') is-invalid @enderror" multiple
+                                accept=".jpg,.jpeg,.png,.gif">
+                            @error('files.*')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Dapat mengupload lebih dari satu foto sebagai cover/ilustrasi berita.
+                                Format: JPG, JPEG, PNG, GIF (Maksimal 2MB per file)</small>
+                        </div>
+
+                        <!-- File Preview Area -->
+                        <div class="file-preview-area mt-3" id="filePreview">
+                            <p class="text-muted mb-2">Pratinjau foto:</p>
+                            <div class="row" id="imageList"></div>
+                        </div>
+
+                        <!-- Uploaded Files Info -->
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Foto akan disimpan dalam tabel media dengan:
+                            <ul class="mb-0 mt-2">
+                                <li>ref_table = 'pengaduan'</li>
+                                <li>ref_id = [ID Pengaduan]</li>
+                                <li>file_name = [nama file yang diupload]</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('pengaduan.index') }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left me-2"></i>Kembali
@@ -124,4 +164,99 @@
             </form>
         </div>
     </div>
+
+@section('scripts')
+    <script>
+        // Array untuk menyimpan file
+        let selectedFiles = [];
+
+        // Image Preview Script
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const imageList = document.getElementById('imageList');
+
+            // Tambahkan file baru ke array
+            Array.from(this.files).forEach((file) => {
+                if (file.type.startsWith('image/')) {
+                    // Cek apakah file sudah ada
+                    const existingFile = selectedFiles.find(f => f.name === file.name && f.size === file
+                        .size);
+                    if (!existingFile) {
+                        selectedFiles.push(file);
+
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const colDiv = document.createElement('div');
+                            colDiv.className = 'col-md-3 mb-3';
+                            colDiv.id = 'file_' + selectedFiles.length;
+
+                            colDiv.innerHTML = `
+                                <div class="card">
+                                    <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                    <div class="card-body p-2">
+                                        <small class="card-text text-truncate d-block">${file.name}</small>
+                                        <small class="text-muted">(${(file.size / 1024).toFixed(2)} KB)</small>
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-block mt-2 remove-image" 
+                                                data-filename="${file.name}" data-filesize="${file.size}">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+
+                            imageList.appendChild(colDiv);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+            // Reset input file untuk memungkinkan upload file yang sama lagi
+            this.value = '';
+        });
+
+        // Remove image
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-image')) {
+                const button = e.target.closest('.remove-image');
+                const fileName = button.dataset.filename;
+                const fileSize = parseInt(button.dataset.filesize);
+
+                // Hapus dari array
+                selectedFiles = selectedFiles.filter(file =>
+                    !(file.name === fileName && file.size === fileSize)
+                );
+
+                // Hapus dari tampilan
+                e.target.closest('.col-md-3').remove();
+            }
+        });
+
+        document.getElementById('pengaduanForm').addEventListener('submit', function(e) {
+            // Buat DataTransfer baru
+            const dataTransfer = new DataTransfer();
+
+            // Tambahkan semua file yang dipilih ke DataTransfer
+            selectedFiles.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+
+            // Buat input file baru dan ganti yang lama
+            const newFileInput = document.createElement('input');
+            newFileInput.type = 'file';
+            newFileInput.name = 'files[]';
+            newFileInput.multiple = true;
+            newFileInput.files = dataTransfer.files;
+            newFileInput.style.display = 'none';
+
+            // Ganti input file lama dengan yang baru
+            const oldFileInput = document.getElementById('fileInput');
+            oldFileInput.parentNode.insertBefore(newFileInput, oldFileInput);
+            oldFileInput.remove();
+
+            // Hapus id dari input baru (opsional)
+            newFileInput.removeAttribute('id');
+
+        });
+    </script>
+@endsection
 @endsection

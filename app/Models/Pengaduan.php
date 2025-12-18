@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Pengaduan extends Model
 {
     use HasFactory;
+    use \App\Traits\HasMediaUpload; 
 
     protected $table = 'pengaduan';
     protected $primaryKey = 'pengaduan_id';
@@ -42,6 +43,13 @@ class Pengaduan extends Model
     public function tindakLanjut()
     {
         return $this->hasOne(TindakLanjut::class, 'pengaduan_id', 'pengaduan_id');
+    }
+
+    public function media()
+    {
+        return $this->hasMany(Media::class, 'ref_id', 'pengaduan_id')
+            ->where('ref_table', 'pengaduan')
+            ->orderBy('sort_order', 'asc');
     }
 
     public function getStatusTextAttribute()

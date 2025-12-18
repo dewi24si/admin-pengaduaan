@@ -16,12 +16,13 @@
         <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
             <i class="fas fa-home text-primary me-2"></i>
             <span class="fw-bold">Admin Desa</span>
+            <span class="badge bg-info ms-2">{{ auth()->user()->role }}</span>
         </a>
 
         <div class="d-flex align-items-center ms-auto">
             <div class="me-3 text-muted small">
                 <i class="fas fa-user me-1"></i>
-                Halo, {{ auth()->user()->name ?? 'Admin' }}
+                Halo, {{ auth()->user()->name }}
             </div>
             <div class="dropdown">
                 <a class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center" href="#"
@@ -35,6 +36,13 @@
                             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                         </a>
                     </li>
+                    @if (auth()->user()->isAdmin())
+                        <li>
+                            <a class="dropdown-item" href="{{ route('users.index') }}">
+                                <i class="fas fa-users me-2"></i>Manajemen User
+                            </a>
+                        </li>
+                    @endif
                     <li>
                         <form action="{{ route('logout') }}" method="POST" class="m-0">
                             @csrf

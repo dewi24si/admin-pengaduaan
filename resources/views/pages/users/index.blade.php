@@ -11,34 +11,36 @@
     <div class="card shadow-sm">
         <div class="card-body">
 
-            {{-- Form Search & Filter --}}
             <div class="row mb-3">
                 <div class="col-md-12">
                     <form action="{{ route('users.index') }}" method="GET" class="row g-2 align-items-center">
-                        <div class="col-md-5">
-                            <input type="text"
-                                   name="search"
-                                   class="form-control"
-                                   placeholder="Cari nama / email..."
-                                   value="{{ request('search') }}">
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control" placeholder="Cari nama / email..."
+                                value="{{ request('search') }}">
                         </div>
 
-                        <div class="col-md-4">
-                            <select name="registered" class="form-select">
-                                <option value="">-- Semua Tanggal Registrasi --</option>
-                                <option value="today" {{ request('registered') == 'today' ? 'selected' : '' }}>
-                                    Hari ini
-                                </option>
-                                <option value="week" {{ request('registered') == 'week' ? 'selected' : '' }}>
-                                    7 hari terakhir
-                                </option>
-                                <option value="month" {{ request('registered') == 'month' ? 'selected' : '' }}>
-                                    30 hari terakhir
+                        <div class="col-md-3">
+                            <select name="role" class="form-select">
+                                <option value="">-- Semua Role --</option>
+                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="petugas" {{ request('role') == 'petugas' ? 'selected' : '' }}>Petugas
                                 </option>
                             </select>
                         </div>
 
-                        <div class="col-md-3 d-flex gap-2">
+                        <div class="col-md-3">
+                            <select name="registered" class="form-select">
+                                <option value="">-- Semua Tanggal --</option>
+                                <option value="today" {{ request('registered') == 'today' ? 'selected' : '' }}>Hari ini
+                                </option>
+                                <option value="week" {{ request('registered') == 'week' ? 'selected' : '' }}>7 hari
+                                    terakhir</option>
+                                <option value="month" {{ request('registered') == 'month' ? 'selected' : '' }}>30 hari
+                                    terakhir</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex gap-2">
                             <button type="submit" class="btn btn-outline-primary w-100">
                                 <i class="bi bi-search me-1"></i> Filter
                             </button>
@@ -50,15 +52,15 @@
                 </div>
             </div>
 
-            {{-- Tabel --}}
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
-                            <th width="25%">Nama</th>
-                            <th width="30%">Email</th>
-                            <th width="20%">Tanggal Dibuat</th>
+                            <th width="25%">User</th>
+                            <th width="20%">Email</th>
+                            <th width="15%">Role</th>
+                            <th width="15%">Tanggal</th>
                             <th width="20%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -68,17 +70,41 @@
                                 <td>{{ ($users->currentPage() - 1) * $users->perPage() + $i + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-                                            style="width: 35px; height: 35px;">
-                                            <i class="bi bi-person"></i>
+                                        <div class="position-relative me-3">
+                                            <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
+                                                class="rounded-circle"
+                                                style="width: 45px; height: 45px; object-fit: cover; border: 2px solid #dee2e6;">
+                                            @if ($user->id == auth()->id())
+                                                <span
+                                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+                                                    style="font-size: 0.5rem;">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </span>
+                                            @endif
                                         </div>
-                                        <strong>{{ $user->name }}</strong>
+                                        <div>
+                                            <strong>{{ $user->name }}</strong>
+                                            @if ($user->id == auth()->id())
+                                                <small class="text-success d-block">(Anda)</small>
+                                            @endif
+                                        </div>
                                     </div>
                                 </td>
                                 <td>{{ $user->email }}</td>
                                 <td>
+                                    @if ($user->role == 'admin')
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-shield-check me-1"></i>Admin
+                                        </span>
+                                    @else
+                                        <span class="badge bg-info">
+                                            <i class="bi bi-person-workspace me-1"></i>Petugas
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
                                     <i class="bi bi-calendar3 me-1 text-muted"></i>
-                                    {{ $user->created_at->format('d/m/Y H:i') }}
+                                    {{ $user->created_at->format('d/m/Y') }}
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
@@ -109,7 +135,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="6" class="text-center py-5">
                                     <i class="bi bi-person display-1 text-muted"></i>
                                     <p class="mt-3 text-muted">Belum ada data user</p>
                                 </td>
@@ -119,7 +145,6 @@
                 </table>
             </div>
 
-            {{-- Pagination --}}
             @if ($users->hasPages())
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">

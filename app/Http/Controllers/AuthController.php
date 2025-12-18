@@ -11,32 +11,46 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        // Jika sudah login, redirect ke dashboard
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
         return view('pages.auth.login');
     }
 
     public function showRegister()
     {
+        // Hanya admin yang bisa akses register
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
+        }
         return view('pages.auth.register');
     }
 
     public function register(Request $request)
     {
+        // Hanya admin yang bisa register user baru
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
+            'role' => 'required|in:admin,petugas', 
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => $validated['role'], 
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('dashboard')
-            ->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->name);
+        // Admin tidak login otomatis setelah membuat user baru
+        return redirect()->route('users.index')
+            ->with('success', 'User berhasil ditambahkan! Role: ' . $validated['role']);
     }
 
     public function login(Request $request)
@@ -50,7 +64,7 @@ class AuthController extends Controller
 
         if (!$user) {
             return back()->withErrors([
-                'email' => 'Akun tidak ditemukan. Silakan daftar terlebih dahulu.',
+                'email' => 'Akun tidak ditemukan.',
             ])->onlyInput('email');
         }
 
@@ -63,7 +77,7 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+        return redirect()->route('dashboard')->with('success', 'Login berhasil! Selamat datang, ' . $user->name);
     }
 
     public function logout(Request $request)

@@ -16,15 +16,16 @@
                     <form action="{{ route('tindak.index') }}" method="GET" class="row g-2">
                         <div class="col-md-6">
                             <input type="text" name="search" class="form-control"
-                                   placeholder="Cari tiket / judul / petugas / aksi..."
-                                   value="{{ request('search') }}">
+                                placeholder="Cari tiket / judul / petugas / aksi..." value="{{ request('search') }}">
                         </div>
 
                         <div class="col-md-4">
                             <select name="has_foto" class="form-select">
-                                <option value="">-- Semua Foto --</option>
-                                <option value="1" {{ request('has_foto') === '1' ? 'selected' : '' }}>Dengan Foto</option>
-                                <option value="0" {{ request('has_foto') === '0' ? 'selected' : '' }}>Tanpa Foto</option>
+                                <option value="">-- Semua File --</option>
+                                <option value="1" {{ request('has_foto') === '1' ? 'selected' : '' }}>Dengan File
+                                </option>
+                                <option value="0" {{ request('has_foto') === '0' ? 'selected' : '' }}>Tanpa File
+                                </option>
                             </select>
                         </div>
 
@@ -49,13 +50,16 @@
                             <th width="12%">No Tiket</th>
                             <th width="23%">Judul Pengaduan</th>
                             <th width="15%">Petugas</th>
-                            <th width="25%">Aksi</th>
-                            <th width="10%" class="text-center">Foto</th>
-                            <th width="10%" class="text-center">Aksi</th>
+                            <th width="20%">Aksi</th>
+                            <th width="10%" class="text-center">File</th>
+                            <th width="15%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($tindakLanjut as $i => $row)
+                            @php
+                                $mediaCount = $row->media()->count();
+                            @endphp
                             <tr>
                                 <td>{{ ($tindakLanjut->currentPage() - 1) * $tindakLanjut->perPage() + $i + 1 }}</td>
                                 <td><span class="badge bg-primary">{{ $row->pengaduan->nomor_tiket }}</span></td>
@@ -65,11 +69,10 @@
                                 </td>
                                 <td>{{ $row->aksi }}</td>
                                 <td class="text-center">
-                                    @if ($row->foto)
-                                        <a href="{{ asset('storage/' . $row->foto) }}" target="_blank"
-                                            class="btn btn-sm btn-info" title="Lihat Foto">
-                                            <i class="bi bi-image"></i> Lihat
-                                        </a>
+                                    @if ($mediaCount > 0)
+                                        <span class="badge bg-info" title="{{ $mediaCount }} file">
+                                            <i class="bi bi-files me-1"></i>{{ $mediaCount }}
+                                        </span>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif

@@ -14,6 +14,7 @@
                     </svg>
                 </div>
                 <span class="brand-text">Admin Desa</span>
+                <small class="brand-role badge bg-info">{{ auth()->user()->role }}</small>
             </a>
         </div>
 
@@ -38,23 +39,81 @@
                 </a>
             </li>
 
-            <!-- Kategori Pengaduan -->
-            <li class="nav-item">
-                <a href="{{ route('kategori.index') }}"
-                    class="nav-link {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
-                    <span class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z">
-                            </path>
-                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
-                        </svg>
-                    </span>
-                    <span class="nav-text">Kategori</span>
-                </a>
-            </li>
+            <!-- Hanya untuk Admin -->
+            @if (auth()->user()->isAdmin())
+                <!-- Kategori Pengaduan -->
+                <li class="nav-item">
+                    <a href="{{ route('kategori.index') }}"
+                        class="nav-link {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
+                        <span class="nav-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z">
+                                </path>
+                                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Kategori</span>
+                    </a>
+                </li>
 
+                <!-- Warga -->
+                <li class="nav-item">
+                    <a href="{{ route('warga.index') }}"
+                        class="nav-link {{ request()->routeIs('warga.*') ? 'active' : '' }}">
+                        <span class="nav-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Data Warga</span>
+                    </a>
+                </li>
+
+                <!-- User Management -->
+                <li class="nav-item">
+                    <a href="{{ route('users.index') }}"
+                        class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <span class="nav-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                                </path>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Manajemen User</span>
+                    </a>
+                </li>
+
+                <!-- Penilaian Layanan -->
+                <li class="nav-item">
+                    <a href="{{ route('penilaian.index') }}"
+                        class="nav-link {{ request()->routeIs('penilaian.*') ? 'active' : '' }}">
+                        <span class="nav-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                </polygon>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Penilaian</span>
+                    </a>
+                </li>
+            @endif
+
+            <!-- Untuk Admin dan Petugas -->
             <!-- Pengaduan -->
             <li class="nav-item">
                 <a href="{{ route('pengaduan.index') }}"
@@ -67,42 +126,6 @@
                         </svg>
                     </span>
                     <span class="nav-text">Pengaduan</span>
-                </a>
-            </li>
-
-            <!-- Warga -->
-            <li class="nav-item">
-                <a href="{{ route('warga.index') }}"
-                    class="nav-link {{ request()->routeIs('warga.*') ? 'active' : '' }}">
-                    <span class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                    </span>
-                    <span class="nav-text">Data Warga</span>
-                </a>
-            </li>
-
-            <!-- User Management -->
-            <li class="nav-item">
-                <a href="{{ route('users.index') }}"
-                    class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                    <span class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path
-                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-                            </path>
-                        </svg>
-                    </span>
-                    <span class="nav-text">Manajemen User</span>
                 </a>
             </li>
 
@@ -121,21 +144,14 @@
                     <span class="nav-text">Tindak Lanjut</span>
                 </a>
             </li>
+            <!-- Tentang Pengembang -->
 
-            <!-- Penilaian Layanan -->
             <li class="nav-item">
-                <a href="{{ route('penilaian.index') }}"
-                    class="nav-link {{ request()->routeIs('penilaian.*') ? 'active' : '' }}">
+                <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">
                     <span class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <polygon
-                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                            </polygon>
-                        </svg>
+                        <i class="bi bi-person-badge" style="font-size: 1.2rem;"></i>
                     </span>
-                    <span class="nav-text">Penilaian</span>
+                    <span class="nav-text">Tentang Pengembang</span>
                 </a>
             </li>
 
@@ -143,6 +159,13 @@
 
         <!-- Logout Button -->
         <div class="sidebar-footer">
+            <div class="user-info mb-2 px-3 text-center">
+                <small class="text-light">
+                    <i class="bi bi-person-badge me-1"></i>
+                    {{ auth()->user()->name }}
+                    <span class="badge bg-info ms-1">{{ auth()->user()->role }}</span>
+                </small>
+            </div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="logout-btn">
@@ -162,7 +185,6 @@
 
     </div>
 </nav>
-
 <style>
     :root {
         --sidebar-bg: #0f172a;
@@ -176,6 +198,16 @@
         --sidebar-border: #334155;
         --danger-color: #ef4444;
         --danger-hover: #dc2626;
+    }
+
+    .brand-role {
+        font-size: 0.6rem;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+    }
+
+    .user-info {
+        font-size: 0.8rem;
     }
 
     /* Sidebar Container */

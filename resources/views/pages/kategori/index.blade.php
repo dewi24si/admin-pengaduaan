@@ -14,17 +14,19 @@
                 <div class="col-md-8">
                     <form action="{{ route('kategori.index') }}" method="GET" class="row g-2">
                         <div class="col-md-5">
-                            <input type="text" name="search" class="form-control"
-                                placeholder="Cari nama kategori..."
+                            <input type="text" name="search" class="form-control" placeholder="Cari nama kategori..."
                                 value="{{ request('search') }}">
                         </div>
 
                         <div class="col-md-4">
                             <select name="prioritas" class="form-select">
                                 <option value="">-- Semua Prioritas --</option>
-                                <option value="tinggi" {{ request('prioritas') == 'tinggi' ? 'selected' : '' }}>Tinggi</option>
-                                <option value="sedang" {{ request('prioritas') == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                                <option value="rendah" {{ request('prioritas') == 'rendah' ? 'selected' : '' }}>Rendah</option>
+                                <option value="tinggi" {{ request('prioritas') == 'tinggi' ? 'selected' : '' }}>Tinggi
+                                </option>
+                                <option value="sedang" {{ request('prioritas') == 'sedang' ? 'selected' : '' }}>Sedang
+                                </option>
+                                <option value="rendah" {{ request('prioritas') == 'rendah' ? 'selected' : '' }}>Rendah
+                                </option>
                             </select>
                         </div>
 
@@ -48,7 +50,9 @@
                             <th width="40%">Nama Kategori</th>
                             <th width="15%">SLA (Hari)</th>
                             <th width="20%">Prioritas</th>
-                            <th width="17%" class="text-center">Aksi</th>
+                            @if (auth()->user()->isAdmin())
+                                <th width="17%" class="text-center">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -79,26 +83,28 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="text-center">
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('kategori.show', $row->kategori_id) }}" class="btn btn-info"
-                                            title="Detail">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="{{ route('kategori.edit', $row->kategori_id) }}" class="btn btn-warning"
-                                            title="Edit">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <form action="{{ route('kategori.destroy', $row->kategori_id) }}" method="POST"
-                                            class="d-inline">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Yakin hapus kategori ini?')"
-                                                class="btn btn-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                @if (auth()->user()->isAdmin())
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('kategori.show', $row->kategori_id) }}" class="btn btn-info"
+                                                title="Detail">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ route('kategori.edit', $row->kategori_id) }}"
+                                                class="btn btn-warning" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <form action="{{ route('kategori.destroy', $row->kategori_id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Yakin hapus kategori ini?')"
+                                                    class="btn btn-danger" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

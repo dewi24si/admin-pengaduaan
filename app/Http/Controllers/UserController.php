@@ -9,6 +9,12 @@ use Carbon\Carbon;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        // Hanya admin yang bisa akses semua method kecuali edit profile sendiri
+        $this->middleware('admin')->except(['edit', 'update']);
+    }
+
     public function index(Request $request)
     {
         $query = User::query()->latest();
@@ -19,8 +25,13 @@ class UserController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
+        }
+
+        // Filter: role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
         }
 
         // Filter: waktu registrasi
@@ -54,12 +65,14 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,petugas', // TAMBAH VALIDASI ROLE
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role, // TAMBAH ROLE
         ]);
 
         return redirect()->route('users.index')->with('success', 'Data user berhasil ditambahkan.');
@@ -68,6 +81,12 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
+
+        // Petugas hanya bisa edit profile sendiri
+        if (auth()->user()->isPetugas() && $user->id != auth()->id()) {
+            return redirect()->route('users.index')->with('error', 'Anda hanya bisa mengedit profil sendiri.');
+        }
+
         return view('pages.users.edit', compact('user'));
     }
 
@@ -75,16 +94,27 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        // Petugas hanya bisa edit profile sendiri
+        if (auth()->user()->isPetugas() && $user->id != auth()->id()) {
+            return redirect()->route('users.index')->with('error', 'Anda hanya bisa mengedit profil sendiri.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
+            'role' => auth()->user()->isAdmin() ? 'required|in:admin,petugas' : '', // Hanya admin bisa ubah role
         ]);
 
         $data = [
-            'name'  => $request->name,
+            'name' => $request->name,
             'email' => $request->email,
         ];
+
+        // Hanya admin yang bisa ubah role
+        if (auth()->user()->isAdmin() && $request->has('role')) {
+            $data['role'] = $request->role;
+        }
 
         if ($request->password) {
             $data['password'] = Hash::make($request->password);
@@ -97,7 +127,6 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        // Cegah penghapusan user sendiri
         if ($id == auth()->id()) {
             return redirect()->route('users.index')->with('error', 'Tidak dapat menghapus akun sendiri.');
         }

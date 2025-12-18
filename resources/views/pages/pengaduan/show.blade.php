@@ -10,7 +10,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-8">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">
                         <i class="bi bi-chat-left-text me-2"></i>Detail Pengaduan
@@ -89,6 +89,51 @@
                     </div>
                 </div>
             </div>
+
+            <!-- MEDIA FILES SECTION (COVER/FOTO BERITA) -->
+            @if ($mediaFiles && $mediaFiles->count() > 0)
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-images me-2"></i>Foto/Cover Berita
+                            <small class="float-end">Total: {{ $mediaFiles->count() }} foto</small>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach ($mediaFiles as $media)
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                            <img src="{{ $media->file_url }}" alt="{{ $media->caption }}"
+                                                class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                        <div class="card-body">
+                                            <h6 class="card-title text-truncate">{{ $media->caption ?? 'Cover Berita' }}
+                                            </h6>
+                                            <p class="card-text small text-muted">
+                                                Diupload: {{ $media->created_at->format('d/m/Y H:i') }}
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <a href="{{ $media->file_url }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary flex-fill">
+                                                    <i class="bi bi-eye me-1"></i>Lihat
+                                                </a>
+                                                <a href="{{ $media->file_url }}" download
+                                                    class="btn btn-sm btn-outline-success flex-fill">
+                                                    <i class="bi bi-download me-1"></i>Unduh
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="col-md-4">
